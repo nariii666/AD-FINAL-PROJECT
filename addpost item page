@@ -1,0 +1,486 @@
+import { useState } from "react";
+import "./addpage.css";
+
+const startingProducts = [
+  {
+    id: 1,
+    name: "Handmade ceramic mug",
+    price: 480,
+    category: "Home & Living",
+    description:
+      "A one of a kind, hand-glazed mug made for slow mornings. Local pickup or delivery available.",
+    seller: "Mia Santos",
+    location: "Quezon City",
+    emoji: "☕",
+    color: "peach",
+    comments: [
+      {
+        id: 11,
+        author: "Paolo R.",
+        text: "The glaze is so pretty! Is this microwave safe?",
+        replies: [
+          {
+            id: 12,
+            author: "Mia Santos",
+            text: "Yes, it is microwave and dishwasher safe!",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "Everyday canvas tote",
+    price: 350,
+    category: "Bags & Accessories",
+    description:
+      "Sturdy canvas tote with an inside pocket. Fits your daily essentials, books, and market finds.",
+    seller: "Theo Garcia",
+    location: "Makati City",
+    emoji: "👜",
+    color: "sage",
+    comments: [],
+  },
+  {
+    id: 3,
+    name: "Golden hour plant set",
+    price: 650,
+    category: "Plants & Garden",
+    description:
+      "Two easy-care indoor plants in handmade pots. Great for a bright desk or windowsill.",
+    seller: "Nina Flores",
+    location: "Pasig City",
+    emoji: "🪴",
+    color: "lavender",
+    comments: [
+      {
+        id: 31,
+        author: "Lara D.",
+        text: "Can I get these delivered this weekend?",
+        replies: [],
+      },
+    ],
+  },
+];
+
+const peso = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+  maximumFractionDigits: 0,
+});
+
+export default function AddPage({ username = "seller", onLogout }) {
+  const [products, setProducts] = useState(startingProducts);
+  const [query, setQuery] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [commentDrafts, setCommentDrafts] = useState({});
+  const [replyDrafts, setReplyDrafts] = useState({});
+  const [photoPreview, setPhotoPreview] = useState("");
+
+  function updateDraft(setter, key, value) {
+    setter((current) => ({ ...current, [key]: value }));
+  }
+
+  function addComment(productId, event) {
+    event.preventDefault();
+    const text = commentDrafts[productId]?.trim();
+    if (!text) return;
+    setProducts((current) =>
+      current.map((product) =>
+        product.id === productId
+          ? {
+              ...product,
+              comments: [
+                ...product.comments,
+                { id: Date.now(), author: username, text, replies: [] },
+              ],
+            }
+          : product,
+      ),
+    );
+    updateDraft(setCommentDrafts, productId, "");
+  }
+
+  function addReply(productId, commentId, event) {
+    event.preventDefault();
+    const key = `${productId}-${commentId}`;
+    const text = replyDrafts[key]?.trim();
+    if (!text) return;
+    setProducts((current) =>
+      current.map((product) =>
+        product.id !== productId
+          ? product
+          : {
+              ...product,
+              comments: product.comments.map((comment) =>
+                comment.id !== commentId
+                  ? comment
+                  : {
+                      ...comment,
+                      replies: [
+                        ...comment.replies,
+                        { id: Date.now(), author: username, text },
+                      ],
+                    },
+              ),
+            },
+      ),
+    );
+    updateDraft(setReplyDrafts, key, "");
+  }
+
+  function createProduct(event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const name = form.get("product-name").trim();
+    const price = Number(form.get("product-price"));
+    if (!name || !Number.isFinite(price) || price < 1) return;
+    setProducts((current) => [
+      {
+        id: Date.now(),
+        name,
+        price,
+        category: form.get("product-category"),
+        description:
+          form.get("product-description").trim() ||
+          "Message the seller for more details.",
+        seller: username,
+        location: "Philippines",
+        emoji: "✨",
+        color: "peach",
+        imageUrl: photoPreview,
+        photoDescription: form.get("photo-description").trim(),
+        comments: [],
+      },
+      ...current,
+    ]);
+    event.currentTarget.reset();
+    setPhotoPreview("");
+    setShowForm(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const visibleProducts = products.filter((product) =>
+    `${product.name} ${product.category} ${product.seller} ${product.location}`
+      .toLowerCase()
+      .includes(query.toLowerCase()),
+  );
+
+  return (
+    <main className="marketplace">
+      <header className="market-header">
+        <a className="brand" href="#top" aria-label="Swapora Marketplace home">
+          <span className="brand-mark">✳</span> SWAPORA
+        </a>
+        <div className="header-right">
+          <span className="signed-in">
+            <span className="online-dot" /> Hi, {username}
+          </span>
+          <button className="text-button" onClick={onLogout}>
+            Log out
+          </button>
+        </div>
+      </header>
+
+      <section className="market-hero" id="top">
+        <div className="hero-copy">
+          <span className="eyebrow">GOOD FINDS, CLOSE TO HOME</span>
+          <h1>
+            Little finds.
+            <br />
+            <em>Big local love.</em>
+          </h1>
+          <p>
+            Discover things made, grown, and loved by people in your community.
+          </p>
+        </div>
+        <div className="hero-art" aria-hidden="true">
+          <span className="hero-sun">☼</span>
+          <span className="hero-flower">✿</span>
+          <span className="hero-leaf">❋</span>
+        </div>
+        <div className="hero-note">
+          <span>✦</span> Shop small, shop happy
+        </div>
+      </section>
+
+      <section className="feed-wrap" aria-label="Product marketplace">
+        <div className="feed-heading">
+          <div>
+            <span className="eyebrow">THE COMMUNITY BOARD</span>
+            <h2>Fresh from your neighbors</h2>
+          </div>
+          <button
+            className="primary-button"
+            onClick={() => setShowForm((visible) => !visible)}
+          >
+            <span>＋</span> {showForm ? "Close form" : "Share a product"}
+          </button>
+        </div>
+
+        {showForm && (
+          <form className="new-product form-panel" onSubmit={createProduct}>
+            <div className="form-heading">
+              <div>
+                <h3>What are you sharing?</h3>
+                <p>Your name will appear publicly on this listing.</p>
+              </div>
+              <span className="form-sparkle">✳</span>
+            </div>
+            <div className="form-grid">
+              <label>
+                Product name
+                <input
+                  name="product-name"
+                  placeholder="e.g. Sunday sourdough loaf"
+                  maxLength="70"
+                  required
+                />
+              </label>
+              <label>
+                Price in pesos
+                <div className="price-input">
+                  <span>₱</span>
+                  <input
+                    name="product-price"
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="450"
+                    required
+                  />
+                </div>
+              </label>
+              <label>
+                Category
+                <select name="product-category">
+                  <option>Handmade</option>
+                  <option>Home & Living</option>
+                  <option>Food & Drink</option>
+                  <option>Clothing</option>
+                  <option>Bags & Accessories</option>
+                  <option>Plants & Garden</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <div className="photo-field">
+                <label htmlFor="product-photo">
+                  Product photo <span>(optional)</span>
+                </label>
+                <input
+                  id="product-photo"
+                  name="product-photo"
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) =>
+                    setPhotoPreview(
+                      event.target.files?.[0]
+                        ? URL.createObjectURL(event.target.files[0])
+                        : "",
+                    )
+                  }
+                />
+                <label htmlFor="photo-description">
+                  Photo description{" "}
+                  <span>(helps people using screen readers)</span>
+                </label>
+                <input
+                  id="photo-description"
+                  name="photo-description"
+                  type="text"
+                  maxLength="120"
+                  placeholder="Describe what the photo shows, e.g. Blue ceramic mug with hand-painted flowers"
+                />
+                {photoPreview && (
+                  <img
+                    className="photo-preview"
+                    src={photoPreview}
+                    alt="Preview of the selected product"
+                  />
+                )}
+              </div>
+              <label className="wide-field">
+                A little about it
+                <textarea
+                  name="product-description"
+                  rows="3"
+                  maxLength="240"
+                  placeholder="What makes it special? Add pickup or delivery details, too."
+                />
+              </label>
+            </div>
+            <button className="primary-button submit-product" type="submit">
+              Post to the community <span>↗</span>
+            </button>
+          </form>
+        )}
+
+        {!showForm && (
+          <>
+            <div className="feed-tools">
+              <label className="search-box">
+                <span>⌕</span>
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Find something lovely..."
+                  aria-label="Search products"
+                />
+                <kbd>⌘ K</kbd>
+              </label>
+              <span className="result-count">
+                {visibleProducts.length}{" "}
+                {visibleProducts.length === 1 ? "find" : "finds"} to explore
+              </span>
+            </div>
+
+            <div className="product-feed">
+              {visibleProducts.map((product) => (
+                <article className="product-card" key={product.id}>
+                  <div className={`product-art ${product.color}`}>
+                    {product.imageUrl && (
+                      <img
+                        className="product-photo"
+                        src={product.imageUrl}
+                        alt={product.photoDescription || product.name}
+                      />
+                    )}
+                    <span className="product-category">{product.category}</span>
+                    {!product.imageUrl && (
+                      <span className="product-emoji" aria-hidden="true">
+                        {product.emoji}
+                      </span>
+                    )}
+                    <span className="art-sparkle">✳</span>
+                  </div>
+                  <div className="product-body">
+                    <div className="product-topline">
+                      <span className="seller-avatar">
+                        {product.seller.charAt(0).toUpperCase()}
+                      </span>
+                      <div>
+                        <strong>{product.seller}</strong>
+                        <span className="seller-location">
+                          ⌖ {product.location}
+                        </span>
+                      </div>
+                      <span className="public-label">PUBLIC</span>
+                    </div>
+                    <div className="product-title-row">
+                      <h3>{product.name}</h3>
+                      <strong className="product-price">
+                        {peso.format(product.price)}
+                      </strong>
+                    </div>
+                    <p className="product-description">{product.description}</p>
+                    <div className="card-footer">
+                      <span>
+                        ♡ <b>{product.comments.length}</b>{" "}
+                        {product.comments.length === 1 ? "comment" : "comments"}
+                      </span>
+                      <span className="local-tag">✦ Local seller</span>
+                    </div>
+                    <div className="comments-area">
+                      {product.comments.map((comment) => {
+                        const replyKey = `${product.id}-${comment.id}`;
+                        return (
+                          <div className="comment" key={comment.id}>
+                            <div className="comment-line">
+                              <span className="comment-avatar">
+                                {comment.author.charAt(0).toUpperCase()}
+                              </span>
+                              <p>
+                                <strong>{comment.author}</strong> {comment.text}
+                              </p>
+                            </div>
+                            {comment.replies.map((reply) => (
+                              <div className="reply-line" key={reply.id}>
+                                <span className="reply-stem" />
+                                <span className="comment-avatar reply-avatar">
+                                  {reply.author.charAt(0).toUpperCase()}
+                                </span>
+                                <p>
+                                  <strong>{reply.author}</strong> {reply.text}
+                                </p>
+                              </div>
+                            ))}
+                            <form
+                              className="reply-form"
+                              onSubmit={(event) =>
+                                addReply(product.id, comment.id, event)
+                              }
+                            >
+                              <input
+                                value={replyDrafts[replyKey] || ""}
+                                onChange={(event) =>
+                                  updateDraft(
+                                    setReplyDrafts,
+                                    replyKey,
+                                    event.target.value,
+                                  )
+                                }
+                                placeholder="Write a reply..."
+                                aria-label={`Reply to ${comment.author}`}
+                              />
+                              <button
+                                type="submit"
+                                disabled={!replyDrafts[replyKey]?.trim()}
+                              >
+                                Reply
+                              </button>
+                            </form>
+                          </div>
+                        );
+                      })}
+                      <form
+                        className="comment-form"
+                        onSubmit={(event) => addComment(product.id, event)}
+                      >
+                        <span className="comment-avatar current-avatar">
+                          {username.charAt(0).toUpperCase()}
+                        </span>
+                        <input
+                          value={commentDrafts[product.id] || ""}
+                          onChange={(event) =>
+                            updateDraft(
+                              setCommentDrafts,
+                              product.id,
+                              event.target.value,
+                            )
+                          }
+                          placeholder="Ask a question or leave a kind note..."
+                          aria-label={`Comment on ${product.name}`}
+                        />
+                        <button
+                          type="submit"
+                          aria-label="Post comment"
+                          disabled={!commentDrafts[product.id]?.trim()}
+                        >
+                          ↗
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </article>
+              ))}
+              {visibleProducts.length === 0 && (
+                <div className="empty-state">
+                  <span>☁</span>
+                  <h3>No finds just yet</h3>
+                  <p>Try another search, or share the first product.</p>
+                </div>
+              )}
+            </div>
+            <p className="feed-end">
+              <span>✿</span> That's all for now. Keep supporting your community.
+            </p>
+          </>
+        )}
+      </section>
+      <footer className="market-footer">
+        <span>✳ SWAPORA</span>
+        <span>Made for the makers next door.</span>
+      </footer>
+    </main>
+  );
+}
