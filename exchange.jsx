@@ -20,14 +20,12 @@ const ExchangeRequestPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1200));
 
     console.log('Piso Exchange Request Submitted:', formData);
     setIsSubmitting(false);
     setSubmitted(true);
 
-    // Reset form after success
     setTimeout(() => {
       setSubmitted(false);
       setFormData({
@@ -42,7 +40,6 @@ const ExchangeRequestPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl mx-auto">
-        {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
             Piso Exchange Request
@@ -52,7 +49,6 @@ const ExchangeRequestPage = () => {
           </p>
         </div>
 
-        {/* Success Message */}
         {submitted && (
           <div className="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-center">
             <p className="font-medium">Request submitted successfully!</p>
@@ -60,11 +56,9 @@ const ExchangeRequestPage = () => {
           </div>
         )}
 
-        {/* Form Card */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
             
-            {/* Amount */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Amount (Piso)
@@ -87,7 +81,6 @@ const ExchangeRequestPage = () => {
               </div>
             </div>
 
-            {/* Preferred Rate (Optional) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Preferred Rate <span className="text-gray-400 font-normal">(optional)</span>
@@ -103,7 +96,6 @@ const ExchangeRequestPage = () => {
               />
             </div>
 
-            {/* Urgency */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Urgency
