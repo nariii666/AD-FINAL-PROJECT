@@ -9,7 +9,7 @@ const initialProfiles = [
     location: "Quezon City, Philippines",
     bio: "Finding good things a second home. I sell well-loved pieces and take great care of every order.",
     avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=85",
+      "https:",
     joined: "March 2023",
     own: true,
     items: [
@@ -20,7 +20,7 @@ const initialProfiles = [
         condition: "Like new",
         price: 450,
         image:
-          "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=800&q=85",
+          "https:",
       },
       {
         id: "item-2",
@@ -29,7 +29,7 @@ const initialProfiles = [
         condition: "Good",
         price: 1850,
         image:
-          "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=85",
+          "https:",
       },
       {
         id: "item-3",
@@ -38,7 +38,7 @@ const initialProfiles = [
         condition: "Like new",
         price: 680,
         image:
-          "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=85",
+          "https:",
       },
     ],
   },
@@ -49,7 +49,7 @@ const initialProfiles = [
     location: "Makati City, Philippines",
     bio: "Curating vintage staples, little home upgrades, and pieces with a story.",
     avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=85",
+      "https:",
     joined: "August 2022",
     own: false,
     items: [
@@ -60,7 +60,7 @@ const initialProfiles = [
         condition: "Good",
         price: 1200,
         image:
-          "https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=800&q=85",
+          "https:",
       },
       {
         id: "item-5",
@@ -69,7 +69,7 @@ const initialProfiles = [
         condition: "Like new",
         price: 950,
         image:
-          "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=85",
+          "https:",
       },
     ],
   },
